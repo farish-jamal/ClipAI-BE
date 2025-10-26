@@ -5,7 +5,6 @@ import {
    handleUserSignup,
    handleCustomizeUser,
    handleUserLogin,
-   handleEditUser,
 } from "../../controllers/auth/index";
 import { isUser } from "../../middleware/validate_user";
 
@@ -17,7 +16,5 @@ router
    .patch(isUser, validateRequest(customizeUserSchema), handleCustomizeUser);
 
 router.route("/login").post(validateRequest(loginSchema), handleUserLogin);
-
-router.route("/update/user").patch(isUser, validateRequest(updateUserSchema), handleEditUser);
 
 export default router;

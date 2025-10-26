@@ -5,7 +5,6 @@ import {
    createNewUserService,
    customizeUserService,
    loginUserService,
-   editUserService,
 } from "../../services/auth";
 
 export const handleUserSignup = asyncHandler(
@@ -44,21 +43,6 @@ export const handleUserLogin = asyncHandler(
       const { email, password } = req.body;
 
       const response = await loginUserService(email, password);
-
-      if (!response.success) {
-         return res.status(200).json(new ApiResponse(response.statusCode, null, response.message));
-      }
-
-      return res.status(200).json(new ApiResponse(200, response.data, response.message));
-   }
-);
-
-export const handleEditUser = asyncHandler(
-   async (req: Request, res: Response): Promise<Response> => {
-      const user = req.user as { userId: string; email: string };
-      const id = user.userId;
-
-      const response = await editUserService(id, req.body);
 
       if (!response.success) {
          return res.status(200).json(new ApiResponse(response.statusCode, null, response.message));

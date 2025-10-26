@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import ApiResponse from "../utils/api_response";
 import jwt from "jsonwebtoken";
-import { findUserById } from "../repository/auth";
+import { findUserById } from "../repository/user";
 
 export const isUser = async (req: Request, res: Response, next: NextFunction) => {
    try {

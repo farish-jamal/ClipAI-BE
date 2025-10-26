@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -14,6 +8,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Status {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum Plan {
+  FREE
+  BASIC
+  PREMIUM
+}
+
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
@@ -22,7 +28,7 @@ model User {
   emailVerified Boolean @default(false)
   avatar String?
   credits Int @default(500)
-  totalReelsCreated Int @default(0) 
+  totalReelsCreated Int @default(0)
   prefferedLanguage String @default("hi")
   prefferedVoice String?
   prefferedStyle String?
@@ -31,10 +37,24 @@ model User {
   refreshToken String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  videos Video[] @relation("UserVideos")
 }
 
-enum Plan {
-  FREE
-  BASIC
-  PREMIUM
+model Video {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  user User @relation("UserVideos", fields: [userId], references: [id], onDelete: Cascade)
+  prompt String
+  script String
+  prefferedLanguage String?
+  prefferedVoice String?
+  prefferedStyle String?
+  duration Int
+  videoUrl String
+  status Status @default(PROCESSING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
