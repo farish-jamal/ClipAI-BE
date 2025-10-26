@@ -50,6 +50,9 @@ model Video {
   prefferedLanguage String?
   prefferedVoice String?
   prefferedStyle String?
+  targetAudience String?
+  contentGoal String?
+  keyPoints String[]
   duration Int
   videoUrl String
   status Status @default(PROCESSING)
