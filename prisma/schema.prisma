@@ -18,7 +18,7 @@ model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
   name String?
-  password String
+  password String?
   emailVerified Boolean @default(false)
   avatar String?
   credits Int @default(500)
@@ -28,6 +28,7 @@ model User {
   prefferedStyle String?
   lastLogin DateTime?
   plan Plan @default(FREE)
+  refreshToken String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
