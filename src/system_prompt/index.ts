@@ -1,6 +1,6 @@
 export const systemPrompt = (
    userId: string,
-   prefferedLanguage: string = "en",
+   prefferedLanguage: string = "hindi",
    prefferedStyle: string = "Motivational",
    prefferedVoice: string = "Neutral",
    prefferedCountry: string = "India",

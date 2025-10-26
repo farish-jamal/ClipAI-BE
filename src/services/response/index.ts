@@ -1,6 +1,7 @@
 import { findUserById } from "../../repository/user";
 import { systemPrompt } from "../../system_prompt";
 import { generateScript } from "../../utils/generate_response";
+import { generateVoiceover } from "../../utils/text_to_speech";
 
 export const generateResponseService = async (userId: string, data: any): Promise<any> => {
    const user = await findUserById(userId);
@@ -35,9 +36,10 @@ export const generateResponseService = async (userId: string, data: any): Promis
     Key Points to Include: ${Array.isArray(data.keyPoints) && data.keyPoints.length ? data.keyPoints.join(", ") : "None provided"}
     `;
 
+   // Genererated script using system and user prompts with Gemini API
    const script = await generateScript(system_prompt, user_prompt);
 
-   if (!script) {
+   if (script.success === false) {
       return {
          success: false,
          statusCode: 500,
@@ -45,10 +47,26 @@ export const generateResponseService = async (userId: string, data: any): Promis
          data: null,
       };
    }
+
+   // With the script, convert it to speech using Eleven Labs API
+   const voice_over = await generateVoiceover(
+      script.data,
+      user.preferredVoiceId,
+      `${userId}_voiceover.mp3`
+   );
+
+   if (voice_over.success === false) {
+      return {
+         success: false,
+         statusCode: 500,
+         message: "Failed to generate voiceover",
+         data: null,
+      };
+   }
    return {
       success: true,
       statusCode: 200,
       message: "Script generated successfully",
-      data: { script: script.data },
+      data: { script: script.data, voice_over: voice_over.data },
    };
 };
