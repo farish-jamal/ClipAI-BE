@@ -12,9 +12,19 @@ const loginSchema = z.object({
 });
 
 const customizeUserSchema = z.object({
-    avatarUrl: z.string().url().optional(),
-    prefferedVoice: z.string().optional(),
-    prefferedStyle: z.string().optional(),
+   avatarUrl: z.string().url().optional(),
+   prefferedVoice: z.string().optional(),
+   prefferedStyle: z.string().optional(),
 });
 
-export { signupSchema, loginSchema, customizeUserSchema };
+const updateUserSchema = z.object({
+   avatarUrl: z.string().url().optional(),
+   prefferedVoice: z.string().optional(),
+   prefferedStyle: z.string().optional(),
+   password: z.string().min(8).max(100).optional(),
+   confirmPassword: z.string().min(8).max(100).optional(),
+   name: z.string().min(2).max(100).optional(),
+   preferredLanguage: z.string().optional(),
+});
+
+export { signupSchema, loginSchema, customizeUserSchema, updateUserSchema };

@@ -4,9 +4,9 @@ import {
    findUserByEmail,
    findUserById,
    updateToken,
-   updateUserCustomization,
+   updateUser,
 } from "../../repository/auth";
-import { hashPassword } from "../../utils/passwords";
+import { comparePasswords, hashPassword } from "../../utils/passwords";
 
 export const createNewUserService = async (email: string, password: string, name: string) => {
    const userExists = await findUserByEmail(email);
@@ -95,7 +95,7 @@ export const customizeUserService = async (
    if (prefferedVoice) payload.prefferedVoice = prefferedVoice;
    if (prefferedStyle) payload.prefferedStyle = prefferedStyle;
 
-   const updatedUser = await updateUserCustomization(id, payload);
+   const updatedUser = await updateUser(id, payload);
 
    if (!updatedUser) {
       return {
@@ -110,6 +110,111 @@ export const customizeUserService = async (
       success: true,
       statusCode: 200,
       message: "User customization updated successfully",
+      data: updatedUser,
+   };
+};
+
+export const loginUserService = async (email: string, password: string) => {
+   const userExists = await findUserByEmail(email);
+   if (!userExists) {
+      return {
+         success: false,
+         statusCode: 404,
+         message: "User not found",
+         data: null,
+      };
+   }
+
+   const isPassWordValid = await comparePasswords(password, userExists.password);
+   if (!isPassWordValid) {
+      return {
+         success: false,
+         statusCode: 401,
+         message: "Invalid password",
+         data: null,
+      };
+   }
+
+   const accessToken = jwt.sign(
+      { userId: userExists.id, email: userExists.email },
+      process.env.JWT_SECRET_KEY as string,
+      {
+         expiresIn: "1d",
+      }
+   );
+
+   const refreshToken = jwt.sign(
+      { userId: userExists.id, email: userExists.email },
+      process.env.JWT_SECRET_KEY as string
+   );
+
+   const updateUserWithToken = await updateToken(userExists.id, refreshToken);
+
+   if (!updateUserWithToken) {
+      return {
+         success: false,
+         statusCode: 500,
+         message: "Failed to update user with refresh token",
+         data: null,
+      };
+   }
+
+   return {
+      success: true,
+      statusCode: 200,
+      message: "User logged in successfully",
+      data: {
+         user: {
+            id: userExists.id,
+            email: userExists.email,
+            name: userExists.name,
+         },
+         accessToken: accessToken,
+      },
+   };
+};
+
+export const editUserService = async (id: string, payload: any) => {
+   const isUserExist = await findUserById(id);
+   if (!isUserExist) {
+      return {
+         success: false,
+         statusCode: 404,
+         message: "User not found",
+         data: null,
+      };
+   }
+
+   if (payload.password) {
+      const isValidPassword = await comparePasswords(payload.currentPassword, isUserExist.password);
+      if (!isValidPassword) {
+         return {
+            success: false,
+            statusCode: 401,
+            message: "Current password is incorrect",
+            data: null,
+         };
+      }
+
+      const hashedNewPassword = await hashPassword(payload.password);
+      payload.password = hashedNewPassword;
+      delete payload.currentPassword;
+   }
+
+   const updatedUser = await updateUser(id, payload);
+   if (!updatedUser) {
+      return {
+         success: false,
+         statusCode: 500,
+         message: "Failed to update user",
+         data: null,
+      };
+   }
+
+   return {
+      success: true,
+      statusCode: 200,
+      message: "User updated successfully",
       data: updatedUser,
    };
 };

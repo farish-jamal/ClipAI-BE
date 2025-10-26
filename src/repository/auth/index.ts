@@ -1,10 +1,11 @@
+import { id } from "zod/v4/locales";
 import prisma from "../../prisma/client";
 
-export const findUserByEmail = async (email: string): Promise<boolean> => {
+export const findUserByEmail = async (email: string): Promise<any> => {
    const user = await prisma.user.findUnique({
       where: { email },
    });
-   return !!user;
+   return user;
 };
 
 export const createUser = async (
@@ -12,7 +13,7 @@ export const createUser = async (
    hashedPassword: string,
    name: string,
    lastLogin: Date
-) => {
+): Promise<any> => {
    return await prisma.user.create({
       data: {
          email,
@@ -23,26 +24,23 @@ export const createUser = async (
    });
 };
 
-export const updateToken = async (userId: string, refreshToken: string) => {
+export const updateToken = async (userId: string, refreshToken: string): Promise<any> => {
    return await prisma.user.update({
       where: { id: userId },
       data: { refreshToken },
    });
 };
 
-export const findUserById = async (id: string) => {
+export const findUserById = async (id: string): Promise<any> => {
    const user = await prisma.user.findUnique({
       where: { id },
    });
-   return !!user;
+   return user;
 };
 
-export const updateUserCustomization = async (
-   userId: string,
-   payload: { avatarUrl?: string; prefferedVoice?: string; prefferedStyle?: string }
-) => {
+export const updateUser = async (id: string, payload: any): Promise<any> => {
    return await prisma.user.update({
-      where: { id: userId },
+      where: { id },
       data: payload,
    });
 };

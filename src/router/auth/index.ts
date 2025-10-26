@@ -1,11 +1,23 @@
 import express from "express";
-import { customizeUserSchema, signupSchema } from "../../validators";
+import { customizeUserSchema, loginSchema, signupSchema, updateUserSchema } from "../../validators";
 import validateRequest from "../../middleware/validate_request";
-import { handleUserSignup, handleCustomizeUser } from "../../controllers/auth/index";
+import {
+   handleUserSignup,
+   handleCustomizeUser,
+   handleUserLogin,
+   handleEditUser,
+} from "../../controllers/auth/index";
+import { isUser } from "../../middleware/validate_user";
 
 const router = express.Router();
 
 router.route("/signup").post(validateRequest(signupSchema), handleUserSignup);
-router.route('/customize/user').patch(validateRequest(customizeUserSchema), handleCustomizeUser);
+router
+   .route("/customize/user")
+   .patch(isUser, validateRequest(customizeUserSchema), handleCustomizeUser);
+
+router.route("/login").post(validateRequest(loginSchema), handleUserLogin);
+
+router.route("/update/user").patch(isUser, validateRequest(updateUserSchema), handleEditUser);
 
 export default router;
