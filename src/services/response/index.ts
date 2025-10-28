@@ -19,12 +19,17 @@ export const generateResponseService = async (userId: string, data: any): Promis
    const preferredStyle = data.preferredStyle ? data.preferredStyle : user.preferredStyle;
    const preferredVoice = data.preferredVoice ? data.preferredVoice : user.preferredVoice;
    const preferredCountry = data.preferredCountry ? data.preferredCountry : user.preferredCountry;
+   const characterName = data.characterName ? data.characterName : user.characterName;
+   const characterDevelopment = data.characterDevelopment;
+
    const system_prompt = systemPrompt(
       userId,
       preferredLanguage,
       preferredStyle,
       preferredVoice,
       preferredCountry,
+      characterName,
+      characterDevelopment,
       data.length ? data.length : 60
    );
 
@@ -48,25 +53,26 @@ export const generateResponseService = async (userId: string, data: any): Promis
       };
    }
 
-   // With the script, convert it to speech using Eleven Labs API
-   const voice_over = await generateVoiceover(
-      script.data,
-      user.preferredVoiceId,
-      `${userId}_voiceover.mp3`
-   );
+   // // With the script, convert it to speech using Eleven Labs API
+   // const voice_over = await generateVoiceover(
+   //    script.data,
+   //    user.preferredVoiceId,
+   //    `${userId}_voiceover.mp3`
+   // );
 
-   if (voice_over.success === false) {
-      return {
-         success: false,
-         statusCode: 500,
-         message: "Failed to generate voiceover",
-         data: null,
-      };
-   }
+   // if (voice_over.success === false) {
+   //    return {
+   //       success: false,
+   //       statusCode: 500,
+   //       message: "Failed to generate voiceover",
+   //       data: null,
+   //    };
+   // }
+   
    return {
       success: true,
       statusCode: 200,
       message: "Script generated successfully",
-      data: { script: script.data, voice_over: voice_over.data },
+      data: { script: script.data },
    };
 };

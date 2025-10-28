@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ta } from "zod/v4/locales";
 
 const signupSchema = z.object({
    email: z.string().email(),
@@ -37,6 +36,8 @@ const generateResponseSchema = z.object({
     targetAudience: z.string().optional(),
     contentGoal: z.string().optional(),
     keyPoints: z.array(z.string()).optional(),
+    characterName: z.string().optional(),
+    characterDevelopment: z.string().optional(),
 });
 
 export { signupSchema, loginSchema, customizeUserSchema, updateUserSchema, generateResponseSchema };
